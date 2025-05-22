@@ -1,0 +1,25 @@
+10 curl add
+
+curl -X POST http://localhost:8085/v1/api/tasks -H "Content-Type: application/json" -d '{"title":"Task 1","description":"Description 1","completed":false}'
+curl -X POST http://localhost:8085/v1/api/tasks -H "Content-Type: application/json" -d '{"title":"Task 2","description":"Description 2","completed":true}'
+curl -X POST http://localhost:8085/v1/api/tasks -H "Content-Type: application/json" -d '{"title":"Task 3","description":"Description 3","completed":false}'
+curl -X POST http://localhost:8085/v1/api/tasks -H "Content-Type: application/json" -d '{"title":"Task 4","description":"Description 4","completed":true}'
+curl -X POST http://localhost:8085/v1/api/tasks -H "Content-Type: application/json" -d '{"title":"Task 5","description":"Description 5","completed":false}'
+curl -X POST http://localhost:8085/v1/api/tasks -H "Content-Type: application/json" -d '{"title":"Task 6","description":"Description 6","completed":false}'
+curl -X POST http://localhost:8085/v1/api/tasks -H "Content-Type: application/json" -d '{"title":"Task 7","description":"Description 7","completed":true}'
+curl -X POST http://localhost:8085/v1/api/tasks -H "Content-Type: application/json" -d '{"title":"Task 8","description":"Description 8","completed":false}'
+curl -X POST http://localhost:8085/v1/api/tasks -H "Content-Type: application/json" -d '{"title":"Task 9","description":"Description 9","completed":true}'
+curl -X POST http://localhost:8085/v1/api/tasks -H "Content-Type: application/json" -d "{"title":"Task 10","description":"Description 10","completed":false}"
+
+2 update
+curl -X PUT http://localhost:8085/v1/api/tasks/2 \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Updated Task 2","description":"Updated description 2","completed":false}'
+
+curl -X PUT http://localhost:8085/v1/api/tasks/5 \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Updated Task 5","description":"Updated description 5","completed":true}'
+
+
+get all
+curl http://localhost:8085/v1/api/tasks

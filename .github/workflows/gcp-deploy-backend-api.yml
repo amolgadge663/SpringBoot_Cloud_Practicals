@@ -1,4 +1,5 @@
-name: Deploy Task List Backend API to Google GKE
+
+name: GCP Deploy Task List Backend API to GKE
 
 on:
   workflow_dispatch:  # Manual trigger

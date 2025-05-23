@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasklist-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasklist
+  template:
+    metadata:
+      labels:
+        app: tasklist
+    spec:
+      containers:
+        - name: tasklist-container
+          image: us-central1-docker.pkg.dev/YOUR_PROJECT/YOUR_REPO/tasklist:latest
+          ports:
+            - containerPort: 8085

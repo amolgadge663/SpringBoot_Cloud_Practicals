@@ -1,15 +1,15 @@
-# Use OpenJDK 17 base image
-FROM openjdk:17-jdk-slim
+# Use OpenJDK 21 base image
+FROM openjdk:21-jdk-slim
 
 # Set application metadata via build arguments
-ARG PROJECT_NAME=task-list
-ARG VERSION=1.0.0
+# ARG PROJECT_NAME=task-list
+# ARG VERSION=1.0.0
 
 # Set working directory
 WORKDIR /app
 
 # Copy JAR file built by Maven
-COPY target/${PROJECT_NAME}-${VERSION}.jar app.jar
+COPY target/*.jar app.jar
 
 # Expose port 8085
 EXPOSE 8085

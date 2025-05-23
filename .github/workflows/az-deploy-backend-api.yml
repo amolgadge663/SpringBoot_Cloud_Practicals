@@ -1,0 +1,74 @@
+
+name: AZ Deploy Task List Backend API to AKS
+
+on:
+  workflow_dispatch:  # Manual trigger
+#  push:
+#    branches:
+#      - main  # Trigger on push to main branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      AZ_PROJECT_ID: ${{ secrets.AZ_PROJECT_ID }}
+      AZ_ACR_NAME: ${{ secrets.AZ_ACR_NAME }}
+      AZ_REPOSITORY: ${{ secrets.AZ_REPOSITORY }}
+      AZ_IMAGE: tasklist
+      AZ_AKS_CLUSTER_NAME: ${{ secrets.AZ_AKS_CLUSTER_NAME }}
+      AZ_AKS_RESOURCE_GROUP: ${{ secrets.AZ_AKS_RESOURCE_GROUP }}
+      AZ_DEPLOYMENT_NAME: tasklist-deployment
+      AZ_CONTAINER_NAME: tasklist-container
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Run Unit Tests
+        run: mvn test
+
+#      - name: SonarQube Analysis
+#        uses: SonarSource/sonarqube-scan-action@v1.0.1
+#        env:
+#          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
+#          SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
+
+      - name: Build with Maven
+        run: mvn clean package -DskipTests
+
+      - name: Authenticate to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set up Azure CLI
+        uses: azure/CLI@v1
+
+      - name: Configure Docker for ACR
+        run: az acr login --name ${{ env.AZ_ACR_NAME }}
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ env.AZ_ACR_NAME }}.azurecr.io/${{ env.AZ_REPOSITORY }}/${{ env.AZ_IMAGE }}:latest .
+
+      - name: Push Docker image to ACR
+        run: |
+          docker push ${{ env.AZ_ACR_NAME }}.azurecr.io/${{ env.AZ_REPOSITORY }}/${{ env.AZ_IMAGE }}:latest
+
+      - name: Get AKS credentials
+        run: |
+          az aks get-credentials --resource-group ${{ env.AZ_AKS_RESOURCE_GROUP }} --name ${{ env.AZ_AKS_CLUSTER_NAME }}
+
+      - name: Deploy to AKS
+        run: |
+          kubectl set image deployment/${{ env.AZ_DEPLOYMENT_NAME }} ${{ env.AZ_CONTAINER_NAME }}=${{ env.AZ_ACR_NAME }}.azurecr.io/${{ env.AZ_REPOSITORY }}/${{ env.AZ_IMAGE }}:latest
+
